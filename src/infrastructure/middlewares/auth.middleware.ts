@@ -1,5 +1,9 @@
 // authentication.middleware.ts
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request, Response, NextFunction } from 'express';
@@ -31,8 +35,10 @@ export class AuthenticationMiddleware implements NestMiddleware {
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
+      console.log('jvguhyvhyvghgyg');
+      req.user = user;
+      console.log(req.user);
 
-      req['user'] = user;
       next();
     } catch (err) {
       console.error('Auth failed:', err);

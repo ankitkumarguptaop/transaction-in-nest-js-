@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,10 +8,11 @@ import { OrderModule } from './features/order/order.module';
 import { PaymentModule } from './features/payment/payment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'ormconfig';
+import { AuthenticationMiddleware } from './infrastructure/middlewares/auth.middleware';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true }), //for env and validation of entity (configmodule)
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) =>
@@ -22,8 +23,19 @@ import { dataSourceOptions } from 'ormconfig';
     ProductModule,
     OrderModule,
     PaymentModule,
-  ], //for env and validation of entity (configmodule)
+  ], 
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthenticationMiddleware)
+      .exclude(
+        { path: 'users/signin', method: RequestMethod.POST },
+        { path: 'users/signup', method: RequestMethod.POST },
+      )
+      .forRoutes('*');
+  }
+}

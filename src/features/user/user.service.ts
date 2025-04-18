@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 const jwt = require('jsonwebtoken');
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './create-user.dto';
@@ -7,6 +11,7 @@ import { UpdateUserDto } from './update-user.dto';
 import { SignInUserDto } from './signin-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/domain/user/user.entity';
+import { UserEmailAlreadyExistsConflict } from 'src/domain/user/exceptions/exception';
 
 @Injectable()
 export class UserService {
@@ -15,6 +20,15 @@ export class UserService {
     private configService: ConfigService,
   ) {}
   async create(createUserDto: CreateUserDto) {
+    const userAlredyExist = await this.userRepository.findOne({
+      where: {
+        email: createUserDto.email,
+      },
+    });
+    if (userAlredyExist) {
+      throw new UserEmailAlreadyExistsConflict();
+    }
+
     return await this.userRepository.createUser(createUserDto);
   }
 

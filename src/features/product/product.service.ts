@@ -4,6 +4,7 @@ import { UpdateProductDto } from './update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductRepository } from 'src/infrastructure/repositories/product/product.repository';
 import { ConfigService } from '@nestjs/config';
+import { User } from 'src/domain/user/user.entity';
 
 @Injectable()
 export class ProductService {
@@ -13,18 +14,23 @@ export class ProductService {
     private configService: ConfigService,
   ) {}
 
-  async createProduct(createProductDto: CreateProductDto) {
-    console.log('✌️createProductDto --->', createProductDto);
-
-    return await this.productRepository.createProduct(createProductDto);
+  async createProduct(payload: { user: User; body: CreateProductDto }) {
+    const { body, user } = payload;
+    console.log('✌️body , user --->', body, user);
+    return await this.productRepository.createProduct({
+      user_id: user.id,
+      name: body.name,
+      price: body.price,
+      description: body.description,
+    });
   }
 
-  findAll() {
-    return await this.productRepository.find(createProductDto);
+  async listProduct(user: User) {
+    return await this.productRepository.listProduct(user.id);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    return await `This action returns a #${id} product`;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
