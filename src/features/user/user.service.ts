@@ -33,7 +33,7 @@ export class UserService {
   }
 
   generateToken = (id: number) => {
-    return jwt.sign({ id }, this.configService.get<number>('JWT_SECRET'), {
+    return jwt.sign({ id }, this.configService.get<number>('JWT_SECRET')||"nbvtyv", {
       expiresIn: '3d',
     });
   };

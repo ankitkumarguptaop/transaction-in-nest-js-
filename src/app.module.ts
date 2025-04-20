@@ -4,8 +4,6 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './features/user/user.module';
 import { ProductModule } from './features/product/product.module';
-import { OrderModule } from './features/order/order.module';
-import { PaymentModule } from './features/payment/payment.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from 'ormconfig';
 import { AuthenticationMiddleware } from './infrastructure/middlewares/auth.middleware';
@@ -21,8 +19,7 @@ import { AuthenticationMiddleware } from './infrastructure/middlewares/auth.midd
     }),
     UserModule,
     ProductModule,
-    OrderModule,
-    PaymentModule,
+
   ], 
   controllers: [AppController],
   providers: [AppService],

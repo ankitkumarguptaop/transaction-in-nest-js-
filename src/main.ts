@@ -6,6 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './infrastructure/exceptions/all-exception-fillters';
 import { DtoValidation } from './infrastructure/exceptions/exceptions';
 import { ValidationError } from 'class-validator';
+import { LoggingInterceptor } from './infrastructure/interceptors/logger.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  app.useGlobalInterceptors(new LoggingInterceptor());
   const port = configService.get<number>('APP_PORT') || 8080;
 
   await app.listen(port);
